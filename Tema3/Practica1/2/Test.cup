@@ -1,0 +1,29 @@
+import java_cup.runtime.*;
+
+terminal PYC;
+terminal DOUBLE;
+terminal INT;
+terminal String IDENT;
+
+non terminal lineas;
+non terminal linea;
+non terminal int;
+non terminal double;
+non terminal String exp;
+
+precedence right INT, DOUBLE, IDENT;
+precedence nonassoc PYC;
+
+lineas ::= lineas linea
+	| linea;
+
+linea ::= exp:e PYC;
+
+exp ::= INT int	{: Test.out.println(); :}
+     | DOUBLE double {: Test.out.println(); :};
+
+int ::= int:e IDENT:i {: Test.out.print(i + ":int; ");  RESULT = i + ":int; " + e; :}
+     | IDENT:i		{: Test.out.print(i + ":int; "); RESULT = i + ":int;" ; :};
+
+double ::= double:e IDENT:d {: Test.out.print(d + ":double; "); RESULT = d + ":double; " + e; :}
+     | IDENT:d          {: Test.out.print(d + ":double; "); RESULT = d + ":double;" ; :};

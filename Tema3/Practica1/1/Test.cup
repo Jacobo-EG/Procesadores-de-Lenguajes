@@ -1,0 +1,13 @@
+import java_cup.runtime.*;
+
+terminal String  IDENT; 
+terminal String NUMERO;
+
+non terminal String exp;
+
+precedence nonassoc IDENT, NUMERO;
+
+exp ::= NUMERO:n exp:a	{: Test.out.print(" " + n); RESULT = a + " " + n; :}
+     | IDENT:b exp:a	{: Test.out.print(" " + b); RESULT = a + " " + b; :}
+     | NUMERO:n		{: Test.out.print(n); RESULT = n; :}
+     | IDENT:b		{: Test.out.print(b); RESULT = b; :};

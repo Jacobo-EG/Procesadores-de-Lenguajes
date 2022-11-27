@@ -1,0 +1,5 @@
+\"[^\"]+".JPG\""\s"class=\"image\""   {WikiCrawler.nImg++; WikiCrawler.enlacesImagenes.add("https://commons.wikimedia.org"+yytext());}
+\"[^\"]+".JPEG"\"\s"class=\"image\""   {WikiCrawler.nImg++;WikiCrawler.enlacesImagenes.add("https://commons.wikimedia.org"+yytext());}
+\"[^\"]+".PNG"\"\s"class=\"image\""   {WikiCrawler.nImg++; WikiCrawler.enlacesImagenes.add("https://commons.wikimedia.org"+yytext());}
+\"[^\"]+".SVG"\"\s"class=\"image\""   {WikiCrawler.nImg++; WikiCrawler.enlacesImagenes.add("https://commons.wikimedia.org"+yytext());}
+\"[^\"]+".GIF"\"\s"class=\"image\""   {WikiCrawler.nImg++; WikiCrawler.enlacesImagenes.add("https://commons.wikimedia.org"+yytext());}
