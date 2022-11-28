@@ -1,0 +1,13 @@
+import java_cup.runtime.*;
+
+terminal INT, DOUBLE, PYC, COMA, DP;
+terminal String IDENT;
+
+non terminal String exp;
+non terminal String nums;
+
+exp ::= nums:a DP INT PYC    {: Test.out.println("int " + a); :}
+    | nums:a DP DOUBLE PYC   {: Test.out.println("double " + a); :};
+
+nums ::= IDENT:id COMA nums:a {: RESULT = id + ", " + a; :}
+    | IDENT:id                  {: RESULT = id + ";"; :};

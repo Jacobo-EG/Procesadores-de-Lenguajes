@@ -1,0 +1,35 @@
+import java_cup.runtime.*;
+
+action code {: int x, y, z;
+               boolean fib = true; 
+               boolean primero = true; 
+            :};
+
+terminal Integer NUMERO;
+
+non terminal Boolean linea;
+non terminal Boolean exp;
+
+linea ::= exp linea
+        | exp:e     {: if(e){
+                            Test.out.println("SI");
+                        }else{
+                            Test.out.println("NO");
+                        } 
+                    :};
+
+exp ::= NUMERO:n {: if ((!primero) && (fib)) {
+                            z = n;
+                            if (x + y != z) {
+                                fib = false;
+                            }
+                          }
+                         
+                            y = x;
+                            x = n;
+                        
+                            if (y != 0) {
+                                primero = false;
+                            }
+                            
+                            RESULT = fib; :};
