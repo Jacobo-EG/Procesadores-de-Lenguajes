@@ -17,6 +17,14 @@ action code {:
         }
         return i >= filas && filas > 0; 
     }
+
+    public boolean sumables(double[][] a, double[][] b){
+        return Matrices.filas(a) == Matrices.filas(b) && Matrices.columnas(a) == Matrices.columnas(b);
+    }
+
+    public boolean multipicable(double[][] a, double[][] b){
+        return Matrices.columnas(a) == Matrices.filas(b);
+    }
     :};
 
 terminal ALL, CLL, AP, CP, AC, CC;
@@ -52,16 +60,39 @@ funcion ::= TRANSPUESTA AP data:m CP {: matriz = Matrices.transpuesta(m); :}
         | INVERSA AP data:m CP {: if(m != null && Matrices.filas(m) == Matrices.columnas(m)){
                                         matriz = Matrices.inversa(m);
                                     }else{
-                                        System.out.println();
+                                        System.out.println(Matrices.ERROR_INVERSA);
                                     } :}
         | PRINT AP data:m CP {: if(m != null )
                                     Matrices.print(m); :}
-        | ADJUNTA AP data:m CP {: matriz = Matrices.adjunta(m); :};
+        | ADJUNTA AP data:m CP {: if(m != null && Matrices.filas(m) == Matrices.columnas(m)){
+                                        matriz = Matrices.adjunta(m);
+                                    }else{
+                                        System.out.println(Matrices.ERROR_ADJUNTA);
+                                    }  :};
 
-data ::= data:a POR data:b {: matriz = Matrices.producto(a,b); RESULT = matriz; :}
-        | data:a DIV data:b {: matriz = Matrices.producto(a,Matrices.inversa(b)); RESULT = matriz; :}
-        | data:a MAS data:b {: matriz = Matrices.suma(a,b); RESULT = matriz; :}
-        | data:a MENOS data:b {: matriz = Matrices.suma(a,Matrices.producto(-1,b)); RESULT = matriz; :}
+data ::= data:a POR data:b {: if(multipicable(a,b)){
+                                    matriz = Matrices.producto(a,b); RESULT = matriz; 
+                                }else{
+                                    System.out.println(Matrices.ERROR_PROD);
+                                }:}
+        | data:a DIV data:b {: if(multipicable(a,Matrices.inversa(b))){
+                                matriz = Matrices.producto(a,Matrices.inversa(b)); 
+                                RESULT = matriz; 
+                                }else{
+                                    System.out.println(Matrices.ERROR_PROD);
+                                }:}
+        | data:a MAS data:b {: if(sumables(a,b)){
+                                    matriz = Matrices.suma(a,b); 
+                                    RESULT = matriz;
+                                }else{
+                                    System.out.println(Matrices.ERROR_SUMA);
+                                } :}
+        | data:a MENOS data:b {: if(sumables(a,b)){ 
+                                    matriz = Matrices.suma(a,Matrices.producto(-1,b)); 
+                                    RESULT = matriz; 
+                                }else{
+                                    System.out.println(Matrices.ERROR_SUMA);
+                                } :}
         | AP data:m CP {: RESULT = m; :}
         | lect_mat {: RESULT = matriz; :}
         | funcion {: RESULT = matriz; :};
