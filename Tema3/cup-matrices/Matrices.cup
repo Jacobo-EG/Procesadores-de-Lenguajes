@@ -1,0 +1,98 @@
+import java_cup.runtime.*;
+import java.util.*;
+
+action code {:
+    double[][] matriz;
+    ArrayList<ArrayList<Double>> filas = new ArrayList<>(); 
+    ArrayList<Double> fila = new ArrayList<>(); 
+    
+    public boolean filasCorrectas(ArrayList<ArrayList<Double>> m){
+        int filas = m.size();
+        int i = 0;
+        if(filas > 0){
+            int columnas = m.get(0).size();
+            while(i<filas && m.get(i).size() == columnas){
+                i++;
+            }
+        }
+        return i >= filas && filas > 0; 
+    }
+    :};
+
+terminal ALL, CLL, AP, CP, AC, CC;
+terminal COMA, PYC;
+terminal ASIG;
+terminal MAS, MENOS, POR, DIV;
+terminal String INVERSA, TRANSPUESTA, ADJUNTA, PRINT, IDENT;
+terminal double NUMERO;
+
+non terminal lineas, linea;
+non terminal double[][] data;
+non terminal double[][] funcion;
+non terminal lect_fila, lect_filas, lect_mat;
+non terminal asignacion;
+
+precedence left PRINT;
+precedence left IDENT;
+precedence left TRANSPUESTA;
+precedence left COMA;
+precedence left MAS, MENOS;
+precedence left POR, DIV;
+precedence left AP, CP;
+precedence left AC, CC;
+precedence left ALL, CLL;
+
+lineas ::= lineas linea 
+        | linea;
+
+linea ::= asignacion PYC
+        | funcion PYC;
+
+funcion ::= TRANSPUESTA AP data:m CP {: matriz = Matrices.transpuesta(m); :}
+        | INVERSA AP data:m CP {: if(m != null && Matrices.filas(m) == Matrices.columnas(m)){
+                                        matriz = Matrices.inversa(m);
+                                    }else{
+                                        System.out.println();
+                                    } :}
+        | PRINT AP data:m CP {: if(m != null )
+                                    Matrices.print(m); :}
+        | ADJUNTA AP data:m CP {: matriz = Matrices.adjunta(m); :};
+
+data ::= data:a POR data:b {: matriz = Matrices.producto(a,b); RESULT = matriz; :}
+        | data:a DIV data:b {: matriz = Matrices.producto(a,Matrices.inversa(b)); RESULT = matriz; :}
+        | data:a MAS data:b {: matriz = Matrices.suma(a,b); RESULT = matriz; :}
+        | data:a MENOS data:b {: matriz = Matrices.suma(a,Matrices.producto(-1,b)); RESULT = matriz; :}
+        | AP data:m CP {: RESULT = m; :}
+        | lect_mat {: RESULT = matriz; :}
+        | funcion {: RESULT = matriz; :};
+
+lect_mat ::= IDENT:id {: matriz = TablaSimbolos.buscar(id); 
+                        if(matriz == null){ 
+                            System.out.println(TablaSimbolos.ERROR_NOEXISTE); 
+                        } :}
+            | AC lect_filas CC {: if(filasCorrectas(filas)){ 
+                                    matriz = Matrices.toArray(filas);
+                                }else{
+                                    System.out.println(Matrices.ERROR_FILAS);
+                                }
+                                filas.clear(); :}
+            | ALL lect_filas CLL {: if(filasCorrectas(filas)){ 
+                                    matriz = Matrices.toArray(filas);
+                                }else{
+                                    System.out.println(Matrices.ERROR_FILAS);
+                                }
+                                filas.clear(); :};
+
+lect_filas ::= lect_filas PYC lect_fila {: filas.add((ArrayList<Double>) fila.clone());
+                                            fila.clear(); :}
+            | lect_filas COMA ALL lect_fila CLL {: filas.add((ArrayList<Double>) fila.clone());
+                                            fila.clear(); :}
+            | ALL lect_fila CLL               {: filas.add((ArrayList<Double>) fila.clone());
+                                            fila.clear(); :}
+            | lect_fila                {: filas.add((ArrayList<Double>) fila.clone());
+                                            fila.clear(); :};
+
+lect_fila ::= lect_fila COMA NUMERO:n   {: fila.add(n); :}
+            | NUMERO:n                  {: fila.add(n); :};
+
+asignacion ::= IDENT:id ASIG data:m     {: TablaSimbolos.insertar(id,m); :};
