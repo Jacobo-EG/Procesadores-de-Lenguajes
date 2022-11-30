@@ -1,0 +1,17 @@
+import java_cup.runtime.*;
+
+terminal String OPEN_TAG;
+terminal String CLOSE_TAG;
+terminal String TEXT;
+
+non terminal inicio;
+non terminal String lineas;
+non terminal String linea;
+
+inicio ::= lineas:l {: System.out.println("{"+l+"}"); :};
+
+lineas ::= lineas:e linea:l {: RESULT = e + "," + l; :}
+        | linea:l {: RESULT = l; :};
+
+linea ::= OPEN_TAG:tag TEXT:text CLOSE_TAG {:RESULT = tag + ":" + text; :}
+        | OPEN_TAG:tag lineas:l CLOSE_TAG    {:RESULT = tag + ":{" + l + "}"; :};
